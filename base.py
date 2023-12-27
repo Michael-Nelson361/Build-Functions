@@ -45,26 +45,27 @@ def add_newline_for_spaces(text):
 
 def view_list(df):
     df = df.copy()
+    print("Current list of entries:")
     for i in df.index:
         print(f'{df.iloc[i]["name"]}: {df.iloc[i].desc}')
-    input('Press enter to continue')
     
+    print()
     return None
     
 def view_specific(df):
     df = df.copy()
 
-    for i in df.index:
-        print(f'{df.iloc[i]["name"]}')
+    view_list(df)
 
     item_to_view = input('Which would you like to see? ')
 
     # pull the library index
     item_index = df[df["name"] == item_to_view].index
 
-    for col in df.columns:
-        print(f'{col}: {df[df["name"] == item_to_view][col][item_index[0]]}')
+    if item_to_view in df['name'].values:
+        for col in df.columns:
+            print(f'{col}: {df[df["name"] == item_to_view][col][item_index[0]]}')
+    else:
+        print(f"No module named {item_to_view} found.")
 
-    input('Press enter to continue')
-    
     return None
