@@ -40,7 +40,7 @@ def data_saver(load_library=False,load_function=False,saved_data=None):
 
 def add_newline_for_spaces(text):
     # Replace two or more spaces with a newline followed by the spaces
-    modified_text = re.sub(r'(\S)(\s{3,})', r'\1\n\2', text)
+    modified_text = re.sub(r'(\S)(\s{5,})', r'\1\n\2', text)
     return modified_text
 
 def view_list(df):
