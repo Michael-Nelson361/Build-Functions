@@ -1,8 +1,10 @@
+
 import base
 import pandas
 import time
 import autopep8
 from IPython.display import clear_output
+    
 
 def get_filename():
     filename = input("Enter the filename: ")
@@ -12,19 +14,20 @@ def get_filename():
         filename += '.py'
 
     return filename
+    
 
 def select_functions():
     # Retrieve the functions
     df = base.data_saver(load_function=True)
-    
+
     while True:
         # Clear screen
         time.sleep(0.05)
         clear_output()
-        
+
         # Display available functions
         base.view_list(df)
-        
+
         # Get user input
         input_string = input("Enter function names separated by commas: ")
         input_list = [name.strip() for name in input_string.split(',') if name.strip()]
@@ -45,16 +48,17 @@ def select_functions():
         else:
             # Return the list of valid functions if user confirms
             return valid_functions
-        
+    
+
 def find_dependencies(func_names, all_dependencies=set()):
     df = base.data_saver(load_function=True)
-    
+
     new_dependencies = set()
 
     for func in func_names:
         # Get dependencies for the current function
         current_dependencies = df[df['name'] == func]['dependencies'].iloc[0]
-        
+
         # Extract function dependencies if they exist
         func_dependencies = current_dependencies.get('function', []) if isinstance(current_dependencies, dict) else []
 
@@ -71,6 +75,7 @@ def find_dependencies(func_names, all_dependencies=set()):
         find_dependencies(new_dependencies, all_dependencies)
 
     return list(all_dependencies) if all_dependencies else None
+    
 
 def find_library_dependencies(func_names):
     df = base.data_saver(load_function=True)
@@ -86,6 +91,7 @@ def find_library_dependencies(func_names):
             required_libraries.update(libraries)
 
     return list(required_libraries)
+    
 
 def syntax_grabber(item_list, df):
     syntax_list = []
@@ -93,34 +99,35 @@ def syntax_grabber(item_list, df):
     for item in item_list:
         # Find the row in the DataFrame where 'name' matches 'item'
         matching_row = df[df['name'] == item]
-        
+
         syntax_list.append(matching_row['syntax'].iloc[0])
 
     return syntax_list
+    
 
 def assembler():
     # Get the filename from the user
     filename = get_filename()
-    
+
     # Select for the functions to be included
     main_functions = select_functions()
-    
+
     # Get the secondary functions that may be required to run
     primary_functions = find_dependencies(main_functions)
-    
+
     # Establish the list of libraries
     libraries = set()
-    
+
     # Add the libraries to the set
     libraries.update(set(find_library_dependencies(main_functions)))
-    
+
     if primary_functions:
         libraries.update(set(find_library_dependencies(primary_functions)))
-    
+
     # Retrieve the library syntaxes
     libraries_syntax = syntax_grabber(libraries,
                                       base.data_saver(load_library=True))
-    
+
     if primary_functions:
         # Retrieve the function syntaxes
         function_syntax = syntax_grabber(primary_functions + main_functions,
@@ -128,20 +135,21 @@ def assembler():
     else:
         function_syntax = syntax_grabber(main_functions,
                                         base.data_saver(load_function=True))
-    
+
     # Build the file
     print(f'Creating {filename}...')
     with open(filename,'w') as file:
         for item in libraries_syntax:
             file.write(item + '\n')
-            
+
         file.write('\n')
-        
+
         for item in function_syntax:
             file.write(item + '\n\n')
-    
+
     # Apply formatting fixes to the file
     corrections = autopep8.fix_file(filename)
-    
+
     with open(filename,'w') as file:
         file.write(corrections)
+    
