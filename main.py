@@ -7,7 +7,7 @@ import os
 
 current_path = os.getcwd()    # Get and store current working directory
 
-def test_pass(message:="current test",verbose=False):
+def test_pass(message="current test",verbose=False):
     """
     Function prints a message if it is executed. Purely for testing and debugging.
 
@@ -26,6 +26,8 @@ def test_pass(message:="current test",verbose=False):
             final_print = "Test condition: " + str(message)
     except:
         print("Invalid value passed to function. Exiting.")
+    
+    return None
 
 def main(verbose=False):
     pass
